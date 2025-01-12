@@ -15,6 +15,7 @@ name: OpenWrt Builder
 on:
   repository_dispatch:
    workflow_dispatch:
+   
       - name: Free Disk Space
         uses: FirelightFlagboy/gh-runner-free-disk-space@main
         with:
