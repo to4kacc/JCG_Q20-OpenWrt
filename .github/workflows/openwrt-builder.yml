@@ -25,7 +25,7 @@ env:
 
 
 jobs:
-  Build_mt7981_ct3003:
+  Build_mt7981:
     runs-on: ubuntu-latest
     steps:
     - name: Clone Repository
