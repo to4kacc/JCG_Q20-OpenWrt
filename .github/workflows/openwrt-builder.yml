@@ -1,15 +1,20 @@
-name: Build_mt7981
-on: 
+#
+# https://github.com/P3TERX/Actions-OpenWrt
+#
+# File: .github/workflows/openwrt-bulder.yml
+# Description: Build OpenWrt using GitHub Actions
+#
+# Copyright (c) 2019-2024 P3TERX <https://p3terx.com>
+#
+# This is free software, licensed under the MIT License.
+# See /LICENSE for more information.
+#
+
+name: OpenWrt Builder
+
+on:
   repository_dispatch:
   workflow_dispatch:
-
-# 定时触发编译
-  schedule:
-    - cron: 39 22 * * 4
-
-# 点赞☆Star触发编译
-#  watch:
-#    types: [started]
 
 env:
   REPO_URL: https://github.com/padavanonly/immortalwrt-mt798x-24.10
@@ -23,14 +28,13 @@ env:
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
 
-
 jobs:
-  Build_mt7981:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Repository
-      uses: actions/checkout@v4
+  build:
+    runs-on: ubuntu-22.04
 
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -52,6 +56,34 @@ jobs:
         df -h
 
 
+
+    - name: Clone source code
+      working-directory: /workdir
+      run: |
+        df -hT $PWD
+        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
+    - name: Load custom feeds
+      run: |
+        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+        chmod +x $DIY_P1_SH
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P1_SH
+
+    - name: Update feeds
+      run: cd openwrt && ./scripts/feeds update -a
+
+    - name: Install feeds
+      run: cd openwrt && ./scripts/feeds install -a
+
+    - name: Load custom configuration
+      run: |
+        [ -e files ] && mv files openwrt/files
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        chmod +x $DIY_P2_SH
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P2_SH
 
     - name: Download package
       id: package
@@ -133,5 +165,3 @@ jobs:
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    
