@@ -16,4 +16,4 @@
 # Add a feed source
 # echo 'src-git tailscale https://github.com/asvow/luci-app-tailscale' >>feeds.conf.default
 # echo 'src-git Kwrt https://github.com/kiddin9/kwrt-packages' >>feeds.conf.default
-# sed -i "1isrc-git 2305ipk https://github.com/xiangfeidexiaohuo/extra-ipk\n" feeds.conf.default
+sed -i "1isrc-git 2305ipk https://github.com/kenzok8/small-package.git" feeds.conf.default
